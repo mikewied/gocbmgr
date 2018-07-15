@@ -235,8 +235,10 @@ func (c *Couchbase) makeClient() {
 func (c *Couchbase) n_get(path string, result interface{}, headers http.Header) error {
 	errs := []error{}
 	for _, endpoint := range c.endpoints {
+		c.logger.Debugf("REQ: GET %s%s %s", endpoint, path)
 		req, err := http.NewRequest("GET", endpoint+path, nil)
 		if err != nil {
+			c.logger.Debugf("RESP: GET %s%s - %v", endpoint, path, err)
 			return ClientError{"request creation", err}
 		}
 
@@ -244,11 +246,14 @@ func (c *Couchbase) n_get(path string, result interface{}, headers http.Header) 
 
 		response, err := c.client.Do(req)
 		if err != nil {
+			c.logger.Debugf("RESP: GET %s%s - %v", endpoint, path, err)
 			errs = append(errs, err)
 		} else {
 			if rerr := c.n_handleResponse(response, result); rerr != nil {
+				c.logger.Debugf("RESP: GET %s%s - %v", endpoint, path, rerr)
 				errs = append(errs, rerr)
 			} else {
+				c.logger.Debugf("RESP: GET %s%s - Success", endpoint, path)
 				return nil
 			}
 		}
@@ -261,19 +266,24 @@ func (c *Couchbase) n_get(path string, result interface{}, headers http.Header) 
 func (c *Couchbase) n_post(path string, data []byte, headers http.Header) error {
 	errs := []error{}
 	for _, endpoint := range c.endpoints {
+		c.logger.Debugf("REQ: POST %s%s %s", endpoint, path, string(data))
 		req, err := http.NewRequest("POST", endpoint+path, bytes.NewBuffer(data))
 		if err != nil {
+			c.logger.Debugf("RESP: POST %s%s - %v", endpoint, path, err)
 			return ClientError{"request creation", err}
 		}
 		req.Header = headers
 
 		response, err := c.client.Do(req)
 		if err != nil {
+			c.logger.Debugf("RESP: POST %s%s - %v", endpoint, path, err)
 			errs = append(errs, err)
 		} else {
 			if rerr := c.n_handleResponse(response, nil); rerr != nil {
+				c.logger.Debugf("RESP: POST %s%s - %v", endpoint, path, rerr)
 				errs = append(errs, rerr)
 			} else {
+				c.logger.Debugf("RESP: POST %s%s - Success", endpoint, path)
 				return nil
 			}
 		}
@@ -285,19 +295,24 @@ func (c *Couchbase) n_post(path string, data []byte, headers http.Header) error 
 func (c *Couchbase) n_put(path string, data []byte, headers http.Header) error {
 	errs := []error{}
 	for _, endpoint := range c.endpoints {
+		c.logger.Debugf("REQ: PUT %s%s %s", endpoint, path, string(data))
 		req, err := http.NewRequest("PUT", endpoint+path, bytes.NewBuffer(data))
 		if err != nil {
+			c.logger.Debugf("RESP: PUT %s%s - %v", endpoint, path, err)
 			return ClientError{"request creation", err}
 		}
 		req.Header = headers
 
 		response, err := c.client.Do(req)
 		if err != nil {
+			c.logger.Debugf("RESP: PUT %s%s - %v", endpoint, path, err)
 			errs = append(errs, err)
 		} else {
 			if rerr := c.n_handleResponse(response, nil); rerr != nil {
+				c.logger.Debugf("RESP: PUT %s%s - %v", endpoint, path, rerr)
 				errs = append(errs, rerr)
 			} else {
+				c.logger.Debugf("RESP: PUT %s%s - Success", endpoint, path)
 				return nil
 			}
 		}
@@ -309,19 +324,24 @@ func (c *Couchbase) n_put(path string, data []byte, headers http.Header) error {
 func (c *Couchbase) n_delete(path string, headers http.Header) error {
 	errs := []error{}
 	for _, endpoint := range c.endpoints {
+		c.logger.Debugf("REQ: DELETE %s%s", endpoint, path)
 		req, err := http.NewRequest("DELETE", endpoint+path, nil)
 		if err != nil {
+			c.logger.Debugf("RESP: DELETE %s%s - %v", endpoint, path, err)
 			return ClientError{"request creation", err}
 		}
 		req.Header = headers
 
 		response, err := c.client.Do(req)
 		if err != nil {
+			c.logger.Debugf("RESP: DELETE %s%s - %v", endpoint, path, err)
 			errs = append(errs, err)
 		} else {
 			if rerr := c.n_handleResponse(response, nil); rerr != nil {
+				c.logger.Debugf("RESP: DELETE %s%s - %v", endpoint, path, rerr)
 				errs = append(errs, rerr)
 			} else {
+				c.logger.Debugf("RESP: PUT %s%s - Success", endpoint, path)
 				return nil
 			}
 		}

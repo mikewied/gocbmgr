@@ -20,7 +20,13 @@ func (c *Couchbase) addNode(hostname, username, password string, services Servic
 	headers := c.defaultHeaders()
 	headers.Set("Content-Type", ContentTypeUrlEncoded)
 
-	return c.n_post("/controller/addNode", []byte(data.Encode()), headers)
+	c.logger.Debugf("POST /controller/addNode %s", data.Encode())
+	err := c.n_post("/controller/addNode", []byte(data.Encode()), headers)
+	if err != nil {
+		c.logger.Debugf("%v", err)
+	}
+
+	return err
 }
 
 func (c *Couchbase) cancelAddNode(otpNode string) error {

@@ -2,6 +2,7 @@ package cbmgr
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sync/atomic"
 	"time"
@@ -78,6 +79,8 @@ type Couchbase struct {
 	// to uniquely identify the client e.g. differentiates from other go
 	// tools or even instances of couchbase-operator
 	userAgent *UserAgent
+	// the logger for this client
+	logger *logrus.Logger
 }
 
 // New creates a new Couchbase HTTP(S) API client and initializes the
@@ -87,7 +90,10 @@ func New(username, password string) *Couchbase {
 		endpoints: []string{},
 		username:  username,
 		password:  password,
+		logger:    logrus.New(),
 	}
+
+	c.logger.Out = ioutil.Discard
 	c.makeClient()
 	return c
 }
@@ -104,6 +110,10 @@ func (c *Couchbase) SetEndpoints(endpoints []string) {
 func (c *Couchbase) SetUUID(uuid string) {
 	c.uuid = uuid
 	c.makeClient()
+}
+
+func (c *Couchbase) SetLogger(logger *logrus.Logger) {
+	c.logger = logger
 }
 
 // SetTLS updates the client TLS settings.  Creates a new client object to
